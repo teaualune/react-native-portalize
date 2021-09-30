@@ -7,23 +7,32 @@ export interface IManagerHandles {
   unmount(key?: string): void;
 }
 
+export interface IPortalNode {
+  children: React.ReactNode;
+  order?: number;
+}
+
 export const Manager = React.forwardRef((_, ref): any => {
-  const [portals, setPortals] = React.useState<{ key: string; children: React.ReactNode }[]>([]);
+  const [portals, setPortals] = React.useState<{ key: string; node: IPortalNode }[]>([]);
 
   React.useImperativeHandle(
     ref,
     (): IManagerHandles => ({
-      mount(key: string, children: React.ReactNode): void {
-        setPortals(prev => [...prev, { key, children }]);
+      mount(key: string, node: IPortalNode): void {
+        setPortals(prev => {
+          const newPortals = [...prev, { key, node }].sort(
+            (p1, p2) => (p1.node.order ?? 0) - (p2.node.order ?? 0),
+          );
+          return newPortals;
+        });
       },
 
-      update(key: string, children: React.ReactNode): void {
+      update(key: string, node: IPortalNode): void {
         setPortals(prev =>
           prev.map(item => {
             if (item.key === key) {
-              return { ...item, children };
+              return { ...item, node };
             }
-
             return item;
           }),
         );
@@ -35,14 +44,14 @@ export const Manager = React.forwardRef((_, ref): any => {
     }),
   );
 
-  return portals.map(({ key, children }, index: number) => (
+  return portals.map(({ key, node }, index: number) => (
     <View
       key={`react-native-portalize-${key}-${index}`}
       collapsable={false}
       pointerEvents="box-none"
       style={StyleSheet.absoluteFill}
     >
-      {children}
+      {node.children}
     </View>
   ));
 });

@@ -1,13 +1,14 @@
 import * as React from 'react';
 
 import { IProvider } from './Host';
+import { IPortalNode } from './Manager';
 
 interface IConsumerProps {
-  children: React.ReactNode;
+  node: IPortalNode;
   manager: IProvider | null;
 }
 
-export const Consumer = ({ children, manager }: IConsumerProps): null => {
+export const Consumer = ({ node, manager }: IConsumerProps): null => {
   const key = React.useRef<string | undefined>(undefined);
 
   const checkManager = (): void => {
@@ -18,13 +19,13 @@ export const Consumer = ({ children, manager }: IConsumerProps): null => {
 
   const handleInit = (): void => {
     checkManager();
-    key.current = manager?.mount(children);
+    key.current = manager?.mount(node);
   };
 
   React.useEffect(() => {
     checkManager();
-    manager?.update(key.current, children);
-  }, [children, manager]);
+    manager?.update(key.current, node);
+  }, [node, manager]);
 
   React.useEffect(() => {
     handleInit();
