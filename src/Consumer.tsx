@@ -3,12 +3,12 @@ import * as React from 'react';
 import { IProvider } from './Host';
 import { IPortalNode } from './Manager';
 
-interface IConsumerProps {
-  node: IPortalNode;
+interface IConsumerProps extends IPortalNode {
   manager: IProvider | null;
 }
 
-export const Consumer = ({ node, manager }: IConsumerProps): null => {
+export const Consumer = (props: IConsumerProps): null => {
+  const { manager, ...node } = props;
   const key = React.useRef<string | undefined>(undefined);
 
   const checkManager = (): void => {
@@ -25,7 +25,7 @@ export const Consumer = ({ node, manager }: IConsumerProps): null => {
   React.useEffect(() => {
     checkManager();
     manager?.update(key.current, node);
-  }, [node, manager]);
+  }, [manager, node]);
 
   React.useEffect(() => {
     handleInit();

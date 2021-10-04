@@ -52,7 +52,7 @@ export const Host = ({ children, style }: IHostProps): JSX.Element => {
     const key = generateKey();
 
     if (managerRef.current) {
-      managerRef.current.mount(key, children);
+      managerRef.current.mount(key, node);
     } else {
       queueRef.current?.push({ type: 'mount', key, node });
     }

@@ -12,16 +12,20 @@ export interface IPortalNode {
   order?: number;
 }
 
+interface IPortalState extends IPortalNode {
+  key: string;
+}
+
 export const Manager = React.forwardRef((_, ref): any => {
-  const [portals, setPortals] = React.useState<{ key: string; node: IPortalNode }[]>([]);
+  const [portals, setPortals] = React.useState<IPortalState[]>([]);
 
   React.useImperativeHandle(
     ref,
     (): IManagerHandles => ({
       mount(key: string, node: IPortalNode): void {
         setPortals(prev => {
-          const newPortals = [...prev, { key, node }].sort(
-            (p1, p2) => (p1.node.order ?? 0) - (p2.node.order ?? 0),
+          const newPortals = [...prev, { key, ...node }].sort(
+            (p1, p2) => (p1.order ?? 0) - (p2.order ?? 0),
           );
           return newPortals;
         });
@@ -31,7 +35,7 @@ export const Manager = React.forwardRef((_, ref): any => {
         setPortals(prev =>
           prev.map(item => {
             if (item.key === key) {
-              return { ...item, node };
+              return { ...item, ...node };
             }
             return item;
           }),
@@ -44,14 +48,14 @@ export const Manager = React.forwardRef((_, ref): any => {
     }),
   );
 
-  return portals.map(({ key, node }, index: number) => (
+  return portals.map(({ key, children }, index: number) => (
     <View
       key={`react-native-portalize-${key}-${index}`}
       collapsable={false}
       pointerEvents="box-none"
       style={StyleSheet.absoluteFill}
     >
-      {node.children}
+      {children}
     </View>
   ));
 });
