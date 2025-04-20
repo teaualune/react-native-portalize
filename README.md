@@ -4,7 +4,7 @@
 
 The simplest way to render anything on top of the rest.
 
-This component is extracted from [`react-native-paper`](https://github.com/callstack/react-native-paper/tree/master/src/components/Portal) and has been simplified for the purpose of [`react-native-modalize`](https://github.com/jeremybarbet/react-native-modalize).
+Forked from [jeremybarbet/react-native-portalize](https://github.com/jeremybarbet/react-native-portalize)
 
 ## Installation
 
@@ -17,74 +17,42 @@ yarn add react-native-portalize
 ```tsx
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Host, Portal } from 'react-native-portalize';
+import { PortalizeHost, PortalizePortal } from 'react-native-portalize';
 
 export const MyApp = () => (
-  <Host>
+  <PortalizeHost>
     <View>
       <Text>Some copy here and there...</Text>
-
-      <Portal>
+      <PortalizePortal>
         <Text>A portal on top of the rest</Text>
-      </Portal>
+      </PortalizePortal>
     </View>
-  </Host>
+  </PortalizeHost>
 );
 ```
 
-**Example with `react-native-modalize` and `react-navigation`**
+## Advanced Usage: Separated Host and Portal
 
 ```tsx
-import React from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Modalize } from 'react-native-modalize';
-import { Host, Portal } from 'react-native-portalize';
+import {createPortal} from '../react-native-portalize';
 
-const Tab = createBottomTabNavigator();
+const SecondPortal = createPortal('Second');
 
-const ExamplesScreen = () => {
-  const modalRef = useRef<Modalize>(null);
-
-  const onOpen = () => {
-    modalRef.current?.open();
-  };
-
-  return (
-    <>
-      <TouchableOpacity onPress={onOpen}>
-        <Text>Open the modal</Text>
-      </TouchableOpacity>
-
-      <Portal>
-        <Modalize ref={modalRef}>...your content</Modalize>
-      </Portal>
-    </>
-  );
-};
-
-const SettingsScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text>Settings screen</Text>
-  </View>
-);
-
-export const App = () => (
-  <NavigationContainer>
-    <Host>
-      <Tab.Navigator>
-        <Tab.Screen name="Examples" component={ExamplesScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
-      </Tab.Navigator>
-    </Host>
-  </NavigationContainer>
+export const MyApp = () => (
+  <SecondPortal.Host>
+    <View>
+      <Text>Some copy here and there...</Text>
+      <SecondPortal.Portal>
+        <Text>A portal on top of the rest</Text>
+      </SecondPortal.Portal>
+    </View>
+  </SecondPortal.Host>
 );
 ```
 
 ## Props
 
-### Host
+### PortalizeHost
 
 - `children`
 
@@ -94,15 +62,7 @@ A React node that will be most likely wrapping your whole app.
 | ---- | -------- |
 | node | Yes      |
 
-- `style`
-
-Optional props to define the style of the Host component.
-
-| Type  | Required |
-| ----- | -------- |
-| style | No       |
-
-### Portal
+### PortalizePortal
 
 - `children`
 
@@ -111,3 +71,23 @@ The React node you want to display on top of the rest.
 | Type | Required |
 | ---- | -------- |
 | node | Yes      |
+
+- `order`
+
+Stacking order of the node. Default is `0`.
+
+| Type   | Required |
+| ------ | -------- |
+| number | No       |
+
+### createPortal
+
+Create a separated `Host` and `Portal`.
+
+- `hostID`
+
+Only used for debug purpose.
+
+| Type   | Required |
+| ------ | -------- |
+| string | Yes      |

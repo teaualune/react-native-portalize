@@ -1,21 +1,16 @@
 module.exports = {
-  env: {
-    browser: true,
-    es6: true,
-  },
   extends: [
-    'plugin:@typescript-eslint/recommended',
-    'plugin:@typescript-eslint/recommended-requiring-type-checking',
-    'plugin:react/recommended',
-    'prettier/@typescript-eslint',
+    '@react-native',
+    'plugin:jest/recommended',
+    'prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.json',
     sourceType: 'module',
-    ecmaFeatures: { jsx: true },
+    ecmaFeatures: {jsx: true},
   },
-  plugins: ['@typescript-eslint', 'react', 'react-native'],
+  plugins: ['prettier'],
   rules: {
     camelcase: 'off',
     '@typescript-eslint/camelcase': 'off',
@@ -25,11 +20,5 @@ module.exports = {
     '@typescript-eslint/no-use-before-define': 'off',
     'react/display-name': 'off',
   },
-  settings: {
-    react: {
-      pragma: 'React',
-      version: 'detect',
-    },
-  },
-  ignorePatterns: ['node_modules/**/*', 'lib/**/*'],
+  ignorePatterns: ['node_modules/**/*'],
 };

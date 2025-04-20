@@ -1,25 +1,27 @@
 {
+  "extends": "@react-native/typescript-config/tsconfig.json",
   "compilerOptions": {
-    "outDir": "lib/",
+    "moduleResolution": "nodenext",
+    "module": "nodenext",
+    "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "declaration": true,
-    "jsx": "react",
-    "lib": ["es2017", "dom"],
-    "target": "es2015",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noEmitOnError": true,
-    "noImplicitAny": false,
+    "resolveJsonModule": true,
     "esModuleInterop": true,
+    "isolatedModules": true,
+    "jsx": "react",
+    "lib": ["es6"],
+    "noEmit": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "skipLibCheck": true,
     "strict": true,
-    "pretty": true,
-    "removeComments": false,
-    "sourceMap": false,
-    "strictPropertyInitialization": false,
-    "noUnusedLocals": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "noUnusedParameters": true
+    "target": "esnext",
+    "paths": {
+      "react": ["./node_modules/@types/react"]
+    }
   },
   "include": ["src"]
 }

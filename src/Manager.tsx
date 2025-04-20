@@ -1,61 +1,87 @@
-import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, {useCallback, useImperativeHandle, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
 
-export interface IManagerHandles {
-  mount(key: string, children: React.ReactNode): void;
-  update(key?: string, children?: React.ReactNode): void;
-  unmount(key?: string): void;
-}
-
-export interface IPortalNode {
-  children: React.ReactNode;
+export type PortalizeNode = React.PropsWithChildren<{
   order?: number;
+}>;
+
+export interface PortalizeManagerHandle {
+  mount(key: string, node: PortalizeNode): void;
+  update(key: string, node: PortalizeNode): void;
+  unmount(key: string): void;
 }
 
-interface IPortalState extends IPortalNode {
+interface PortalizeState extends PortalizeNode {
   key: string;
 }
 
-export const Manager = React.forwardRef((_, ref): any => {
-  const [portals, setPortals] = React.useState<IPortalState[]>([]);
+export default function Manager(props: {
+  ref?: React.ForwardedRef<PortalizeManagerHandle>;
+}): React.JSX.Element {
+  const [portals, setPortals] = useState<PortalizeState[]>([]);
 
-  React.useImperativeHandle(
-    ref,
-    (): IManagerHandles => ({
-      mount(key: string, node: IPortalNode): void {
-        setPortals(prev => {
-          const newPortals = [...prev, { key, ...node }].sort(
-            (p1, p2) => (p1.order ?? 0) - (p2.order ?? 0),
-          );
-          return newPortals;
-        });
-      },
-
-      update(key: string, node: IPortalNode): void {
-        setPortals(prev =>
-          prev.map(item => {
-            if (item.key === key) {
-              return { ...item, ...node };
+  useImperativeHandle(
+    props.ref,
+    useCallback<() => PortalizeManagerHandle>(
+      () => ({
+        mount(key, node) {
+          setPortals(prev => {
+            const newPortal: PortalizeState = {
+              key,
+              children: node.children,
+              order: node.order,
+            };
+            if (prev.length === 0) {
+              return [newPortal];
             }
-            return item;
-          }),
-        );
-      },
-
-      unmount(key: string): void {
-        setPortals(prev => prev.filter(item => item.key !== key));
-      },
-    }),
+            const retval: PortalizeState[] = [];
+            let inserted = false;
+            prev.forEach((p, i) => {
+              if (inserted) {
+                retval.push(p);
+              } else {
+                if ((newPortal.order ?? 0) < (p.order ?? 0)) {
+                  retval.push(newPortal, p);
+                  inserted = true;
+                } else if (i === prev.length - 1) {
+                  retval.push(newPortal);
+                } else {
+                  retval.push(p);
+                }
+              }
+            });
+            return retval;
+          });
+        },
+        update(key, node) {
+          setPortals(prev =>
+            prev.map(item => {
+              if (item.key === key) {
+                return {...item, ...node};
+              }
+              return item;
+            }),
+          );
+        },
+        unmount(key) {
+          setPortals(prev => prev.filter(item => item.key !== key));
+        },
+      }),
+      [],
+    ),
   );
 
-  return portals.map(({ key, children }, index: number) => (
-    <View
-      key={`react-native-portalize-${key}-${index}`}
-      collapsable={false}
-      pointerEvents="box-none"
-      style={StyleSheet.absoluteFill}
-    >
-      {children}
-    </View>
-  ));
-});
+  return (
+    <>
+      {portals.map((state, index) => (
+        <View
+          key={`rnp-${index}-${state.key}`}
+          collapsable={false}
+          pointerEvents="box-none"
+          style={StyleSheet.absoluteFill}>
+          {state.children}
+        </View>
+      ))}
+    </>
+  );
+}

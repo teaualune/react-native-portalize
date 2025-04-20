@@ -7,7 +7,6 @@
 node_modules/
 npm-debug.log
 yarn-error.log
-yarn.lock
 
 # Misc
 #
@@ -18,5 +17,4 @@ src/
 .prettierignore
 .watchmanconfig
 README.md
-renovate.json
 tsconfig.json
