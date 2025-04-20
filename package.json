@@ -1,8 +1,8 @@
 {
   "name": "react-native-portalize",
-  "version": "1.0.7",
+  "version": "1.1.0",
   "description": "Render anything on top of the rest (forked from jeremybarbet/react-native-portalize)",
-  "main": "lib/index.ts",
+  "main": "src/index.ts",
   "scripts": {
     "lint": "eslint src && tsc"
   },
